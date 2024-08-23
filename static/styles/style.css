@@ -1,0 +1,172 @@
+/* Global styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212; /* Dark background */
+    color: #b3b3b3; /* Light gray text color */
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Prevent body scrolling */
+}
+
+/* Main container */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* Container for the layout panels */
+.container {
+    display: flex;
+    flex: 1; /* Allow container to grow and fill available space */
+    overflow: hidden;
+}
+
+/* Panel styles */
+#left-panel, #right-panel {
+    width: 25%;
+    background-color: #181818; /* Dark background for side panels */
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.5); /* Shadow for left panel */
+    display: flex;
+    flex-direction: column;
+    padding: 20px; /* Padding inside the panels */
+    overflow: hidden; /* Prevent scrolling on the side panels */
+}
+
+#center-panel {
+    padding: 20px;
+    width: 50%;
+    background-color: #121212;
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Allow center panel to grow and fill available space */
+    overflow: hidden; /* Prevent scrolling on the center panel */
+}
+
+/* Section styles within panels */
+#current-playing-info, #users-queue, #track-info {
+    margin-bottom: 20px;
+}
+
+/* Highlighting currently playing track */
+#currently-playing {
+    background-color: #1db954; /* Spotify green background */
+    color: #fff; /* White text color for contrast */
+    border-radius: 10px; /* Slightly more pronounced rounded corners */
+    padding: 10px; /* Additional padding for the highlighted track */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Shadow for better emphasis */
+    border: 2px solid #1db954; /* Green border (Spotify green) */
+    margin-bottom: 10px; /* Space below each highlighted track */
+}
+
+/* Track container styling */
+.track-container {
+    display: flex;
+    align-items: center;
+    border-radius: 8px; /* Rounded corners */
+}
+
+/* Track cover image styling */
+.track-cover {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px; /* Rounded corners for images */
+}
+
+/* Track details styling */
+.track-details {
+    margin-left: 15px;
+}
+
+/* Queue list section */
+#users-queue {
+    display: flex;
+    flex-direction: column;
+    padding: 10px; /* Adjust as needed */
+    flex: 1; /* Allow to grow and fill available space */
+    overflow: hidden; /* Prevent scrolling on the queue section */
+}
+
+/* Make the queue list scrollable */
+#queue-list {
+    font-size: 13px;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 10px;
+    list-style-type: none;
+    background-color: #1e1e1e;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+    overflow-y: auto; /* Enable vertical scrolling */
+    border-radius: 10px;
+    height: 100%; /* Fit within the container */
+    box-sizing: border-box; /* Include padding in height calculation */
+}
+
+/* Individual queue item styling */
+.queue-item {
+    border-bottom: 1px solid #333; /* Light border for item separation */
+    padding: 8px; /* Reduced padding for smaller items */
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Reduced gap */
+    background-color: #1e1e1e; /* Uniform dark background color */
+    border-radius: 8px; /* Slightly rounded corners */
+    transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+/* Styling for currently playing track */
+.current-track {
+    background-color: #333; /* Darker background for emphasis */
+    border: 2px solid #1db954; /* Green border to highlight */
+    border-radius: 8px; /* Rounded corners */
+    padding: 8px; /* Padding for the item */
+}
+
+/* Empty queue message styling */
+#queue-list p {
+    margin: 10px 0;
+    font-size: 13px; /* Adjusted for smaller font size */
+    color: #888; /* Lighter color for empty messages */
+}
+
+/* Search bar styling */
+#search-bar {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #333; /* Darker border */
+    border-radius: 5px; /* Slightly rounded corners */
+    background-color: #1e1e1e; /* Match background color */
+    color: #e0e0e0; /* Match text color */
+}
+
+/* Suggestions list styling */
+#suggestions {
+    margin-top: 10px;
+    background-color: #1e1e1e; /* Match background color */
+    padding: 10px;
+    border-radius: 5px; /* Slightly rounded corners */
+}
+
+
+/* Custom scrollbar styles */
+#queue-list::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+#queue-list::-webkit-scrollbar-track {
+    background: #121212; /* Background color of the track */
+}
+
+#queue-list::-webkit-scrollbar-thumb {
+    background: #1db954; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+}
+
+#queue-list::-webkit-scrollbar-thumb:hover {
+    background: #1aab46; /* Slightly darker color on hover */
+}
