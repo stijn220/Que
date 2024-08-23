@@ -6,3 +6,5 @@
 
 ```pip install spotipy flask python-dotenv```
 
+TODO:
+make the center panel work with the results and make the bar wider
