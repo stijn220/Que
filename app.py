@@ -187,5 +187,28 @@ def get_track_details(track_id):
     except spotipy.exceptions.SpotifyException as e:
         return handle_spotify_exception(e, lambda: sp.track(track_id))
 
+@app.route('/api/add-to-queue', methods=['POST'])
+def add_to_queue():
+    sp = get_spotify_client()
+    if sp is None:
+        return jsonify({'error': 'User not authenticated'}), 401
+
+    track_id = request.json.get('track_id')
+    print(f"Received track ID: {track_id}")  # Debug log
+    if not track_id:
+        return jsonify({'error': 'Track ID is required'}), 400
+
+    try:
+        # Construct the track URI
+        track_uri = f"spotify:track:{track_id}"
+        print(f"Track URI: {track_uri}")  # Debug log
+        # Add track to queue
+        sp.add_to_queue(track_uri)
+        return jsonify({'success': 'Track added to queue!'})
+    except spotipy.exceptions.SpotifyException as e:
+        return handle_spotify_exception(e, lambda: sp.add_to_queue(track_uri))
+
+    
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8888)

@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const addToQueueButton = document.getElementById('add-to-queue-button');
+    const trackDetails = document.getElementById('track-details');
+    const searchInput = document.getElementById('search-bar');
+    const resultsBox = document.querySelector('.results ul');
+    const closeTrackInfoButton = document.getElementById('close-track-info');
+    
+    // Variable to store the selected track ID
+    let selectedTrackId = null;
+
     function fetchCurrentlyPlaying() {
         fetch('/api/currently-playing')
             .then(response => response.json())
@@ -59,9 +68,6 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchCurrentlyPlaying();
     fetchQueue();
 
-    const searchInput = document.getElementById('search-bar');
-    const resultsBox = document.querySelector('.results ul');
-
     // Fetch and display suggestions on input
     searchInput.addEventListener('input', async (e) => {
         const query = e.target.value;
@@ -97,6 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 li.addEventListener('click', () => {
                     searchInput.value = result.name;
+                    selectedTrackId = result.id; // Store selected track ID
                     fetchSongDetails(result.id);
                     hideResults();
                 });
@@ -126,9 +133,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update track details on the page
     function updateTrackInfo(trackInfo) {
-        const trackDetails = document.getElementById('track-details');
         if (trackInfo) {
             trackDetails.innerHTML = `
+                <button id="close-track-info" class="close-btn">X</button>
                 <img src="${trackInfo.album.images[0]?.url || '/static/images/no_cover.png'}" alt="Track Cover" class="track-cover">
                 <div class="track-info-text">
                     <h3>${trackInfo.name || 'No track name available'}</h3>
@@ -137,8 +144,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p>Duration: ${formatDuration(trackInfo.duration_ms) || '0:00'}</p>
                 </div>
             `;
+            addToQueueButton.style.display = 'block'; // Show the button when track details are updated
+            closeTrackInfoButton.style.display = 'block'; // Show the close button
         } else {
             trackDetails.innerHTML = '<p>Select a track to see details</p>';
+            addToQueueButton.style.display = 'none'; // Hide the button when no track info
+            closeTrackInfoButton.style.display = 'none'; // Hide the close button
         }
     }
 
@@ -147,5 +158,47 @@ document.addEventListener('DOMContentLoaded', function() {
         const minutes = Math.floor(ms / 60000);
         const seconds = Math.floor((ms % 60000) / 1000);
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // Add event listener to "Add to Queue" button
+    addToQueueButton.addEventListener('click', function() {
+        if (selectedTrackId) {
+            console.log('Adding to queue:', selectedTrackId); // Debug log
+            addToQueue(selectedTrackId);
+        } else {
+            console.error('No track selected');
+        }
+    });
+
+    // Add event listener to "Close" button
+    closeTrackInfoButton.addEventListener('click', function() {
+        trackDetails.innerHTML = '<p>Select a track to see details</p>';
+        addToQueueButton.style.display = 'none'; // Hide the button
+        closeTrackInfoButton.style.display = 'none'; // Hide the close button
+        selectedTrackId = null; // Clear the selected track ID
+    });
+
+    function addToQueue(trackId) {
+        fetch('/api/add-to-queue', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ track_id: trackId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                alert('Track added to queue!');
+                fetchQueue(); // Optionally, update the queue view
+                trackDetails.innerHTML = '<p>Select a track to see details</p>';
+                addToQueueButton.style.display = 'none'; // Hide the button
+                closeTrackInfoButton.style.display = 'none'; // Hide the close button
+                selectedTrackId = null; // Clear the selected track ID
+            }
+        })
+        .catch(error => console.error('Error adding to queue:', error));
     }
 });

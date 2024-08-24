@@ -39,13 +39,17 @@
         </div>
         <div id="right-panel">
             <div id="track-info">
+                <button id="close-track-info" class="close-btn">X</button>
                 <h2>Track Info</h2>
-                <div id="track-details"></div>
+                <div id="track-details">
+                    <p>Select a track to see details</p>
+                </div>
+                <button id="add-to-queue-button" style="display: none;">Add to Queue</button>
             </div>            
         </div>
     </div>
     <footer id="footer">
-        Version: 0.02 | <a class="insta-link" href="https://www.instagram.com/stijn_van_hees/" target="_blank">Stijn van Hees</a>
+        Version: 1.0 | <a class="insta-link" href="https://www.instagram.com/stijn_van_hees/" target="_blank">Stijn van Hees</a>
     </footer>
 
     <script src="{{ url_for('static', filename='scripts/script.js') }}"></script>
