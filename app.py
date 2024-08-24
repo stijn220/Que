@@ -165,5 +165,27 @@ def search():
         except spotipy.exceptions.SpotifyException as e:
             return handle_spotify_exception(e, lambda: sp.search(q=query, type='track', limit=5))
     return jsonify([])
+
+@app.route('/api/track/<track_id>')
+def get_track_details(track_id):
+    sp = get_spotify_client()
+    if sp is None:
+        return jsonify({'error': 'User not authenticated'}), 401
+
+    try:
+        track = sp.track(track_id)
+        track_info = {
+            'name': track['name'],
+            'artists': [{'name': artist['name']} for artist in track['artists']],
+            'album': {
+                'name': track['album']['name'],
+                'images': track['album']['images']
+            },
+            'duration_ms': track['duration_ms']  # Add duration in milliseconds
+        }
+        return jsonify(track_info)
+    except spotipy.exceptions.SpotifyException as e:
+        return handle_spotify_exception(e, lambda: sp.track(track_id))
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8888)

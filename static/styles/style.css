@@ -47,6 +47,14 @@ body {
     overflow: hidden; /* Prevent scrolling on the side panels */
 }
 
+#left-panel {
+    border-right: 1px solid #333; /* Border between panels */
+}
+
+#right-panel {
+    border-left: 1px solid #333; /* Border between panels */
+}
+
 /* Center panel styling */
 #center-panel {
     padding: 20px;
@@ -56,12 +64,11 @@ body {
     flex-direction: column;
     height: calc(100vh - 60px); /* Full height minus footer height */
     overflow: hidden; /* Prevent scrolling on the center panel */
-    align-items: center; /* Center items horizontally */
     justify-content: flex-start; /* Align items to the top */
 }
 
 /* Section styles within panels */
-#current-playing-info, #users-queue, #track-info {
+#current-playing-info, #users-queue {
     margin-bottom: 20px;
 }
 
@@ -77,14 +84,14 @@ body {
 }
 
 /* Track container styling */
-.track-container {
+.current-track-container {
     display: flex;
     align-items: center;
     border-radius: 8px; /* Rounded corners */
 }
 
 /* Track cover image styling */
-.track-cover {
+.current-track-cover {
     width: 100px;
     height: 100px;
     object-fit: cover;
@@ -92,7 +99,7 @@ body {
 }
 
 /* Track details styling */
-.track-details {
+.current-track-details {
     margin-left: 15px;
 }
 
@@ -203,7 +210,7 @@ body {
     display: none; /* Hide by default */
     top: 100%; /* Position below the search bar */
     width: 100%; /* Full width of the search container */
-    max-height: 400px; /* Adjust height as needed */
+    max-height: auto; /* Adjust height as needed */
     overflow-y: auto;
     background-color: #1e1e1e; /* Match background color */
     border: 1px solid #333; /* Darker border for a sleek look */
@@ -259,4 +266,77 @@ body {
 
 #song-details {
     margin-top: 20px;
+}
+
+/* Track Info Container */
+#track-info {
+    padding: 20px;
+    background-color: #1e1e1e; /* Dark background matching the overall theme */
+    border-left: 1px solid #333; /* Border to match the design */
+    color: #b3b3b3; /* Light gray text color */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    width: 100%;
+    max-width: 700px; /* Limit the maximum width */
+    box-sizing: border-box; /* Ensure padding is included in the width */
+    margin: 0 auto; /* Center the container horizontally */
+}
+
+/* Track Details Container */
+#track-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    text-align: center; /* Center text */
+    margin-bottom: 20px; /* Space below the track details */
+}
+
+/* Track Info Text Styling */
+.track-info-text {
+    margin-bottom: 20px; /* Space below the text */
+}
+
+.track-info-text h3 {
+    margin: 0;
+    font-size: 36px; /* Larger font size for track name */
+    font-weight: bold;
+    color: #ffffff; /* White color for track name */
+}
+
+.track-info-text p {
+    margin: 5px 0;
+    font-size: 20px; /* Larger font size for artist name */
+    color: #b3b3b3; /* Light gray color for artist information */
+}
+
+/* Track Cover Image Styling */
+.track-cover {
+    width: 300px; /* Larger cover image */
+    height: 300px;
+    object-fit: cover;
+    border-radius: 10px; /* Rounded corners for images */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Shadow for better emphasis */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #track-info {
+        padding: 10px;
+    }
+
+    .track-cover {
+        width: 200px;
+        height: 200px;
+    }
+
+    .track-info-text h3 {
+        font-size: 24px; /* Smaller font size for track name */
+    }
+
+    .track-info-text p {
+        font-size: 16px; /* Smaller font size for artist name */
+    }
 }

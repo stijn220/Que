@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-
-    
     function fetchCurrentlyPlaying() {
         fetch('/api/currently-playing')
             .then(response => response.json())
@@ -36,9 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         const trackElement = document.createElement('div');
                         trackElement.className = 'queue-item' + (track.current ? ' current-track' : '');
                         trackElement.innerHTML = `
-                            <div class="track-container">
-                                <img src="${track.album.images[0]?.url || '/static/images/no_cover.png'}" alt="Track Cover" class="track-cover" width="75" height="75">
-                                <div class="track-details">
+                            <div class="current-track-container">
+                                <img src="${track.album.images[0]?.url || '/static/images/no_cover.png'}" alt="Track Cover" class="current-track-cover" width="75" height="75">
+                                <div class="current-track-details">
                                     <h4>${track.name || 'No track name available'}</h4>
                                     <p>${track.artists.map(artist => artist.name).join(', ') || 'No artist info available'}</p>
                                 </div>
@@ -61,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchCurrentlyPlaying();
     fetchQueue();
 
-
     const searchInput = document.getElementById('search-bar');
     const resultsBox = document.querySelector('.results ul');
 
@@ -71,17 +68,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (query.length > 0) {
             try {
                 const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
-                const results = await response.json(); // Changed from 'suggestions' to 'results'
-                showResults(results); // Changed function name from 'showSuggestions' to 'showResults'
+                const results = await response.json();
+                showResults(results);
             } catch (error) {
-                console.error('Error fetching results:', error); // Changed message from 'suggestions' to 'results'
+                console.error('Error fetching results:', error);
             }
         } else {
             hideResults();
         }
     });
 
-    // Show suggestions
+    // Show search results
     function showResults(results) {
         resultsBox.innerHTML = ''; // Clear previous results
 
@@ -104,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     hideResults();
                 });
 
-                resultsBox.appendChild(li);
+                resultsBox.appendChild(li); 
             });
             resultsBox.parentElement.classList.add('show');
         } else {
@@ -112,8 +109,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Hide results
-    function hideResults() { // Changed function name from 'hideSuggestions' to 'hideResults'
-        resultsBox.parentElement.classList.remove('show'); // Hide the results box
+    // Hide search results
+    function hideResults() {
+        resultsBox.parentElement.classList.remove('show');
+    }
+
+    // Fetch and display track details
+    function fetchSongDetails(trackId) {
+        fetch(`/api/track/${trackId}`)
+            .then(response => response.json())
+            .then(trackInfo => {
+                updateTrackInfo(trackInfo);
+            })
+            .catch(error => console.error('Error fetching track details:', error));
+    }
+
+    // Update track details on the page
+    function updateTrackInfo(trackInfo) {
+        const trackDetails = document.getElementById('track-details');
+        if (trackInfo) {
+            trackDetails.innerHTML = `
+                <img src="${trackInfo.album.images[0]?.url || '/static/images/no_cover.png'}" alt="Track Cover" class="track-cover">
+                <div class="track-info-text">
+                    <h3>${trackInfo.name || 'No track name available'}</h3>
+                    <p>${trackInfo.artists.map(artist => artist.name).join(', ') || 'No artist info available'}</p>
+                    <p>${trackInfo.album.name || 'No album info available'}</p>
+                    <p>Duration: ${formatDuration(trackInfo.duration_ms) || '0:00'}</p>
+                </div>
+            `;
+        } else {
+            trackDetails.innerHTML = '<p>Select a track to see details</p>';
+        }
+    }
+
+    // Format duration from milliseconds to mm:ss
+    function formatDuration(ms) {
+        const minutes = Math.floor(ms / 60000);
+        const seconds = Math.floor((ms % 60000) / 1000);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
 });

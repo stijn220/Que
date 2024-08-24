@@ -12,9 +12,9 @@
             <div id="current-playing-info">
                 <h2>Currently Playing</h2>
                 <div id="currently-playing">
-                    <div class="track-container">
-                        <img src="{{ url_for('static', filename='images/no_cover.png') }}" alt="Track Cover" class="track-cover" id="track-cover">
-                        <div class="track-details">
+                    <div class="current-track-container">
+                        <img src="{{ url_for('static', filename='images/no_cover.png') }}" alt="Track Cover" class="current-track-cover" id="track-cover">
+                        <div class="current-track-details">
                             <h3 id="track-name">Nothing is playing</h3>
                             <p id="track-artist"></p>
                         </div>
@@ -26,6 +26,7 @@
                 <div id="queue-list"></div>
             </div>
         </div>
+        
         <div id="center-panel">
             <div class="search-container">
                 <input type="text" id="search-bar" placeholder="Search for a track..." autocomplete="chrome-off">
