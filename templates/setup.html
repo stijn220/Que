@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spotify Connection</title>
-    <link rel="stylesheet" href="static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/setup.css') }}">
 </head>
 <body>
-    <h1>Spotify Connection</h1>
-    {% if connected %}
-        <p>You are connected to Spotify.</p>
-        <a href="{{ url_for('disconnect') }}">
-            <button class="disconnect-button">Disconnect</button>
-        </a>
-    {% else %}
-        <p>You are not connected to Spotify.</p>
-        <a href="{{ url_for('connect') }}">
-            <button class="connect-button">Connect</button>
-        </a>
-    {% endif %}
+    <div class="container">
+        <div class="content">
+            <h1>Spotify Connection</h1>
+            {% if connected %}
+                <p>You are connected to Spotify.</p>
+                <a href="{{ url_for('disconnect') }}">
+                    <button class="spotify-button disconnect-button">Disconnect</button>
+                </a>
+            {% else %}
+                <p>You are not connected to Spotify.</p>
+                <a href="{{ url_for('connect') }}">
+                    <button class="spotify-button connect-button">Connect</button>
+                </a>
+            {% endif %}
+        </div>
+    </div>
 </body>
 </html>

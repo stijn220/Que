@@ -147,26 +147,12 @@ body {
     color: #888; /* Lighter color for empty messages */
 }
 
-/* Custom scrollbar styles for the queue list and results box */
-#queue-list::-webkit-scrollbar,
-.results::-webkit-scrollbar {
-    width: 8px; /* Width of the scrollbar */
-}
-
-#queue-list::-webkit-scrollbar-track,
-.results::-webkit-scrollbar-track {
-    background: #121212; /* Background color of the scrollbar track */
-}
-
-#queue-list::-webkit-scrollbar-thumb,
-.results::-webkit-scrollbar-thumb {
-    background: #1db954; /* Color of the scrollbar thumb */
-    border-radius: 10px; /* Rounded corners for the scrollbar thumb */
-}
-
-#queue-list::-webkit-scrollbar-thumb:hover,
-.results::-webkit-scrollbar-thumb:hover {
-    background: #1aab46; /* Slightly darker color on hover */
+/* Suggestions list styling */
+#suggestions {
+    margin-top: 10px;
+    background-color: #1e1e1e; /* Match background color */
+    padding: 10px;
+    border-radius: 5px; /* Slightly rounded corners */
 }
 
 /* Search container styling */
@@ -201,6 +187,7 @@ body {
 /* Results dropdown styling */
 .results {
     display: none; /* Hide by default */
+    position: absolute;
     top: 100%; /* Position below the search bar */
     width: 100%; /* Full width of the search container */
     max-height: 400px; /* Adjust height as needed */

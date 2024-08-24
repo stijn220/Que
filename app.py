@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 import os
 from dotenv import load_dotenv
 import logging
@@ -24,7 +24,7 @@ sp_oauth = SpotifyOAuth(
     scope=SCOPE
 )
 
-logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.DEBUG)
 
 def get_spotify_client():
     token_info = session.get('token_info')
@@ -143,5 +143,27 @@ def queue():
     except spotipy.exceptions.SpotifyException as e:
         return handle_spotify_exception(e, lambda: sp.queue())
 
+@app.route('/search', methods=['GET'])
+def search():
+    sp = get_spotify_client()
+    if sp is None:
+        return jsonify({'error': 'User not authenticated'}), 401
+    
+    query = request.args.get('q', '')
+    if query:
+        try:
+            results = sp.search(q=query, type='track', limit=5)
+            tracks = [
+                {
+                    'name': track['name'],
+                    'artist': track['artists'][0]['name'],
+                    'id': track['id'],
+                    'image': track['album']['images'][0]['url'] if track['album']['images'] else '/static/images/no_cover.png'
+                } for track in results['tracks']['items']
+            ]
+            return jsonify(tracks)
+        except spotipy.exceptions.SpotifyException as e:
+            return handle_spotify_exception(e, lambda: sp.search(q=query, type='track', limit=5))
+    return jsonify([])
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8888)
