@@ -1,14 +1,18 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth, SpotifyClientCredentials
 import os
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask_session import Session
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 import logging
 
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.getenv('FLASK_SECRET_KEY', 'your-secret-key')
+app.config['SECRET_KEY'] = os.urandom(64)
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_FILE_DIR'] = './.flask_session/'
+Session(app)
 
 # Retrieve credentials from environment variables
 CLIENT_ID = os.getenv('CLIENT_ID')
@@ -17,14 +21,17 @@ REDIRECT_URI = os.getenv('REDIRECT_URI')
 
 SCOPE = 'user-read-playback-state user-library-read user-read-currently-playing user-modify-playback-state'
 
+cache_handler = spotipy.cache_handler.FlaskSessionCacheHandler(session)
+
 sp_oauth = SpotifyOAuth(
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET,
     redirect_uri=REDIRECT_URI,
-    scope=SCOPE
+    scope=SCOPE,
+    cache_handler=cache_handler
 )
 
-#logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 def get_spotify_client():
     token_info = session.get('token_info')
@@ -36,23 +43,6 @@ def get_spotify_client():
         return None
 
     return spotipy.Spotify(auth=access_token)
-
-def refresh_access_token():
-    token_info = session.get('token_info')
-    if not token_info:
-        return None
-
-    refresh_token = token_info.get('refresh_token')
-    if not refresh_token:
-        return None
-
-    try:
-        new_token_info = sp_oauth.refresh_access_token(refresh_token)
-        session['token_info'] = new_token_info
-        return new_token_info.get('access_token')
-    except Exception as e:
-        logging.error(f"Failed to refresh access token: {e}")
-        return None
 
 def handle_spotify_exception(e, retry_function):
     if e.http_status == 401:  # Unauthorized, likely due to expired token
@@ -82,9 +72,31 @@ def connect():
 
 @app.route('/callback')
 def callback():
-    token_info = sp_oauth.get_access_token(request.args.get('code'))
-    session['token_info'] = token_info
-    return redirect(url_for('index'))
+    print('CALLBACK')
+    """Spotify callback function to handle authentication response."""
+    code = request.args.get('code')
+    print(code)
+    if not code:
+        return jsonify({'error': 'No code provided'}), 400
+
+    try:
+        # First try to get a cached token
+        token_info = sp_oauth.get_cached_token()
+        if not token_info:
+            # If no cached token, request a new one
+            token_info = sp_oauth.get_access_token(code)
+        
+        if isinstance(token_info, str):
+            # Handle the case where get_access_token returns a token string
+            session['token_info'] = {'access_token': token_info}
+        else:
+            session['token_info'] = token_info
+
+        return redirect(url_for('index'))
+    except Exception as e:
+        logging.error(f'Failed to authenticate: {str(e)}')
+        return jsonify({'error': f'Failed to authenticate: {str(e)}'}), 400
+
 
 @app.route('/disconnect')
 def disconnect():
@@ -211,4 +223,4 @@ def add_to_queue():
     
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8888)
+    app.run(debug=True, host='127.0.0.1', port=8888)

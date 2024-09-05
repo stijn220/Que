@@ -178,6 +178,38 @@ document.addEventListener('DOMContentLoaded', function() {
         selectedTrackId = null; // Clear the selected track ID
     });
 
+    // Function to show a custom alert
+    function showCustomAlert(message, type = 'success') {
+        const alertBox = document.getElementById('custom-alert');
+        const alertMessage = document.getElementById('alert-message');
+        alertMessage.textContent = message;
+
+        // Add the appropriate class based on the alert type
+        alertBox.className = `custom-alert ${type}`;
+
+        // Show the alert
+        alertBox.classList.remove('hidden');
+
+        // Automatically hide the alert after 3 seconds
+        setTimeout(() => {
+            alertBox.classList.add('hidden');
+        }, 3000);
+    }
+
+    // Close button functionality
+    document.getElementById('alert-close').addEventListener('click', () => {
+        document.getElementById('custom-alert').classList.add('hidden');
+    });
+
+    // Example usage in your existing code
+    addToQueueButton.addEventListener('click', function() {
+        if (selectedTrackId) {
+            addToQueue(selectedTrackId);
+        } else {
+            showCustomAlert('No track selected', 'error');
+        }
+    });
+
     function addToQueue(trackId) {
         fetch('/api/add-to-queue', {
             method: 'POST',
@@ -189,16 +221,21 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert(data.error);
+                showCustomAlert(data.error, 'error');
             } else {
-                alert('Track added to queue!');
+                showCustomAlert('Track added to queue!');
                 fetchQueue(); // Optionally, update the queue view
                 trackDetails.innerHTML = '<p>Select a track to see details</p>';
                 addToQueueButton.style.display = 'none'; // Hide the button
                 closeTrackInfoButton.style.display = 'none'; // Hide the close button
                 selectedTrackId = null; // Clear the selected track ID
+                searchInput.value = ''; //Clear the search bar
             }
         })
-        .catch(error => console.error('Error adding to queue:', error));
+        .catch(error => {
+            showCustomAlert('Error adding to queue', 'error');
+            console.error('Error adding to queue:', error);
+        });
     }
+
 });

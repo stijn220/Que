@@ -383,3 +383,48 @@ body {
 .close-btn:hover {
     background: #c00; /* Darker red on hover */
 }
+
+
+/* Custom Alert Styles */
+.custom-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #1e1e1e; /* Dark background to match the theme */
+    color: #e0e0e0; /* Light gray text color */
+    padding: 15px;
+    border-radius: 8px; /* Slightly rounded corners to match other elements */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Shadow for emphasis */
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Consistent font */
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: #e0e0e0; /* Light gray color to match text */
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.3s; /* Smooth color transition */
+}
+
+.alert-close:hover {
+    color: #b3b3b3; /* Slightly lighter gray on hover */
+}
+
+.custom-alert.hidden {
+    display: none;
+}
+
+.custom-alert.success {
+    background-color: #1db954; /* Spotify green for success messages */
+    border: 2px solid #1aab46; /* Slightly darker green border */
+}
+
+.custom-alert.error {
+    background-color: #f44336; /* Red background for errors */
+    border: 2px solid #c62828; /* Darker red border for emphasis */
+}
