@@ -3,9 +3,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const trackDetails = document.getElementById('track-details');
     const searchInput = document.getElementById('search-bar');
     const resultsBox = document.querySelector('.results ul');
+    const trackInfoWindow = document.getElementById('track-info-window');
     const closeTrackInfoButton = document.getElementById('close-track-info');
+    
     let selectedTrackId = null;
-    let isAddingToQueue = false; // Flag to prevent multiple requests
+
+    // Ensure track info window is hidden on page load
+    trackInfoWindow.style.display = 'none'; 
 
     function fetchCurrentlyPlaying() {
         fetch('/api/currently-playing')
@@ -57,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error fetching queue:', error));
     }
 
-    // Fetch and update data every 5 seconds
+    // Fetch and update data every 5 seconds (adjusted for performance)
     setInterval(() => {
         fetchCurrentlyPlaying();
         fetchQueue();
@@ -134,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateTrackInfo(trackInfo) {
         if (trackInfo) {
             trackDetails.innerHTML = `
-                <button id="close-track-info" class="close-btn">X</button>
                 <img src="${trackInfo.album.images[0]?.url || '/static/images/no_cover.png'}" alt="Track Cover" class="track-cover">
                 <div class="track-info-text">
                     <h3>${trackInfo.name || 'No track name available'}</h3>
@@ -144,11 +147,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
             addToQueueButton.style.display = 'block'; // Show the button when track details are updated
-            closeTrackInfoButton.style.display = 'block'; // Show the close button
+            trackInfoWindow.style.display = 'flex'; // Show the track info window
         } else {
             trackDetails.innerHTML = '<p>Select a track to see details</p>';
             addToQueueButton.style.display = 'none'; // Hide the button when no track info
-            closeTrackInfoButton.style.display = 'none'; // Hide the close button
+            trackInfoWindow.style.display = 'none'; // Hide the track info window
         }
     }
 
@@ -161,11 +164,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add event listener to "Add to Queue" button
     addToQueueButton.addEventListener('click', function() {
-        if (isAddingToQueue) return; // Do nothing if already adding to queue
         if (selectedTrackId) {
-            isAddingToQueue = true; // Set flag to true
-            addToQueue(selectedTrackId)
-                .finally(() => isAddingToQueue = false); // Reset flag when done
+            addToQueue(selectedTrackId);
         } else {
             showCustomAlert('No track selected', 'error');
         }
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
     closeTrackInfoButton.addEventListener('click', function() {
         trackDetails.innerHTML = '<p>Select a track to see details</p>';
         addToQueueButton.style.display = 'none'; // Hide the button
-        closeTrackInfoButton.style.display = 'none'; // Hide the close button
+        trackInfoWindow.style.display = 'none'; // Hide the track info window
         selectedTrackId = null; // Clear the selected track ID
     });
 
@@ -185,26 +185,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const alertMessage = document.getElementById('alert-message');
         alertMessage.textContent = message;
 
-        // Add the appropriate class based on the alert type
         alertBox.className = `custom-alert ${type}`;
-
-        // Show the alert
         alertBox.classList.remove('hidden');
-        
-        // Automatically hide the alert after 3 seconds with fade-out
+
         setTimeout(() => {
             alertBox.classList.add('hidden');
-        }, 3000); // Time before starting fade-out
+        }, 3000);
     }
 
-    // Close button functionality for the custom alert
     document.getElementById('alert-close').addEventListener('click', () => {
         document.getElementById('custom-alert').classList.add('hidden');
     });
 
-    // Function to add track to the queue
     function addToQueue(trackId) {
-        return fetch('/api/add-to-queue', {
+        fetch('/api/add-to-queue', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -220,8 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetchQueue(); // Optionally, update the queue view
                 trackDetails.innerHTML = '<p>Select a track to see details</p>';
                 addToQueueButton.style.display = 'none'; // Hide the button
-                closeTrackInfoButton.style.display = 'none'; // Hide the close button
-                selectedTrackId = null; // Clear the selected track ID
+                trackInfoWindow.style.display = 'none'; // Hide the track info window                selectedTrackId = null; // Clear the selected track ID
                 searchInput.value = ''; // Clear the search bar
             }
         })
@@ -230,4 +223,5 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error adding to queue:', error);
         });
     }
+
 });

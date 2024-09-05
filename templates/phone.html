@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUE</title>
+    <link rel="stylesheet" href="/static/styles/phone.css">
+</head>
+<body>
+
+    <div class="main-content">
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" id="search-bar" placeholder="Search for a track..." autocomplete="chrome-off">
+            <div class="results">
+                <ul id="results-list">
+                    <!-- Dynamic search results will appear here -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Queue Container -->
+        <div id="current-playing-info">
+            <div id="currently-playing">
+                <div class="current-track-container">
+                    <img src="/static/images/no_cover.png" alt="Track Cover" class="current-track-cover" id="track-cover">
+                    <div class="current-track-details">
+                        <h3 id="track-name">Nothing is playing</h3>
+                        <p id="track-artist"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="users-queue">
+            <div id="queue-list"></div>
+        </div>
+    </div>
+
+    <!-- Song Details -->
+    <div id="track-info-window">
+        <button id="close-track-info" class="close-btn">X</button>
+        <h2>Track Info</h2>
+        <div id="track-details">
+        </div>
+
+        <button id="add-to-queue-button" style="display: none;">Add to Queue</button>
+    </div>  
+
+    <!-- Footer -->
+    <footer id="footer">
+        Version: 0.01 | <a class="insta-link" href="https://www.instagram.com/stijn_van_hees/" target="_blank">Stijn van Hees</a>
+    </footer>
+
+    <script src="/static/scripts/phone.js"></script>
+</body>
+</html>

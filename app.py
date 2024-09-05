@@ -31,7 +31,7 @@ sp_oauth = SpotifyOAuth(
     cache_handler=cache_handler
 )
 
-logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.DEBUG)
 
 def get_spotify_client():
     token_info = session.get('token_info')
@@ -58,6 +58,10 @@ def index():
     if 'token_info' not in session:
         return redirect(url_for('setup'))
     return render_template('index.html')
+
+@app.route('/phone')
+def phone():
+    return render_template('phone.html')
 
 @app.route('/setup')
 def setup():
@@ -223,4 +227,4 @@ def add_to_queue():
     
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=8888)
+    app.run(debug=True, host='0.0.0.0', port=8888)

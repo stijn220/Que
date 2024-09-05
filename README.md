@@ -6,7 +6,10 @@
 
 ```pip install spotipy flask python-dotenv```
 
-TODO:
-make the center panel work with the results and make the bar wider
-
+# Usage
 ![alt text](/static/images/Readme/Dashboard%20SS.png)
+
+TODO:
+
+- make it work for phones
+- make the session public

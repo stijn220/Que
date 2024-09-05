@@ -400,6 +400,13 @@ body {
     justify-content: space-between;
     align-items: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Consistent font */
+    opacity: 1;
+    transition: opacity 1s ease-out; /* Adjust the duration as needed */
+}
+
+.custom-alert.hidden {
+    opacity: 0;
+    /* You might also want to add other styles for hidden state if necessary */
 }
 
 .alert-close {
