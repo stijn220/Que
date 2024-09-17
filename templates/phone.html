@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QUE</title>
-    <link rel="stylesheet" href="/static/styles/phone.css">
+    <link rel="icon" href="{{ url_for('static', filename='images/logo/icon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/phone.css') }}">
 </head>
 <body>
 
@@ -38,7 +39,7 @@
 
     <!-- Song Details -->
     <div id="track-info-window">
-        <button id="close-track-info" class="close-btn">X</button>
+        <button id="close-track-info-window" class="close-btn">X</button>
         <h2>Track Info</h2>
         <div id="track-details">
         </div>
@@ -52,5 +53,7 @@
     </footer>
 
     <script src="/static/scripts/phone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+
 </body>
 </html>

@@ -5,71 +5,66 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsBox = document.querySelector('.results ul');
     const trackInfoWindow = document.getElementById('track-info-window');
     const closeTrackInfoButton = document.getElementById('close-track-info');
-    
+    const socket = io();
+
     let selectedTrackId = null;
 
     // Ensure track info window is hidden on page load
     trackInfoWindow.style.display = 'none'; 
 
-    function fetchCurrentlyPlaying() {
-        fetch('/api/currently-playing')
-            .then(response => response.json())
-            .then(data => {
-                const trackNameElement = document.getElementById('track-name');
-                const trackArtistElement = document.getElementById('track-artist');
-                const trackCoverElement = document.getElementById('track-cover');
-                
-                if (data.error) {
-                    trackNameElement.textContent = 'Nothing is playing';
-                    trackArtistElement.textContent = '';
-                    trackCoverElement.src = '/static/images/no_cover.png';
-                } else {
-                    trackNameElement.textContent = data.name;
-                    trackArtistElement.textContent = data.artists.map(artist => artist.name).join(', ');
-                    trackCoverElement.src = data.album.images[0]?.url || '/static/images/no_cover.png';
-                }
-            })
-            .catch(error => console.error('Error fetching currently playing:', error));
+    socket.on('update', (data) => {
+        updateCurrentlyPlaying(data.currently_playing);
+        updateQueue(data.queue);
+    });
+
+    socket.on('connect', () => {
+        console.log('Connected to server');
+        // Request initial data if needed
+        fetch('/initial_data')
+            .then(response => response.text())
+            .then(() => console.log('Initial data request sent'));
+    });
+
+    function updateCurrentlyPlaying(track) {
+        const trackNameElement = document.getElementById('track-name');
+        const trackArtistElement = document.getElementById('track-artist');
+        const trackCoverElement = document.getElementById('track-cover');
+        
+        if (track) {
+            trackNameElement.textContent = track.name || 'No track playing';
+            trackArtistElement.textContent = track.artists.map(artist => artist.name).join(', ') || 'No artist info available';
+            trackCoverElement.src = track.album.images[0]?.url || '/static/images/no_cover.png';
+        } else {
+            trackNameElement.textContent = 'Nothing is playing';
+            trackArtistElement.textContent = '';
+            trackCoverElement.src = '/static/images/no_cover.png';
+        }
     }
 
-    function fetchQueue() {
-        fetch('/api/queue')
-            .then(response => response.json())
-            .then(data => {
-                const queueList = document.getElementById('queue-list');
-                queueList.innerHTML = ''; // Clear previous queue data
+    // Update the queue list
+    function updateQueue(queue) {
+        const queueList = document.getElementById('queue-list');
+        queueList.innerHTML = ''; // Clear previous queue data
 
-                if (data.error) {
-                    queueList.innerHTML = '<p>No queue available</p>';
-                } else {
-                    data.queue.forEach(track => {
-                        const trackElement = document.createElement('div');
-                        trackElement.className = 'queue-item' + (track.current ? ' current-track' : '');
-                        trackElement.innerHTML = `
-                            <div class="current-track-container">
-                                <img src="${track.album.images[0]?.url || '/static/images/no_cover.png'}" alt="Track Cover" class="current-track-cover" width="75" height="75">
-                                <div class="current-track-details">
-                                    <h4>${track.name || 'No track name available'}</h4>
-                                    <p>${track.artists.map(artist => artist.name).join(', ') || 'No artist info available'}</p>
-                                </div>
-                            </div>
-                        `;
-                        queueList.appendChild(trackElement);
-                    });
-                }
-            })
-            .catch(error => console.error('Error fetching queue:', error));
+        if (queue.length === 0) {
+            queueList.innerHTML = '<p>No queue available</p>';
+        } else {
+            queue.forEach(track => {
+                const trackElement = document.createElement('div');
+                trackElement.className = 'queue-item' + (track.current ? ' current-track' : '');
+                trackElement.innerHTML = `
+                    <div class="current-track-container">
+                        <img src="${track.album.images[0]?.url || '/static/images/no_cover.png'}" alt="Track Cover" class="current-track-cover" width="75" height="75">
+                        <div class="current-track-details">
+                            <h4>${track.name || 'No track name available'}</h4>
+                            <p>${track.artists.map(artist => artist.name).join(', ') || 'No artist info available'}</p>
+                        </div>
+                    </div>
+                `;
+                queueList.appendChild(trackElement);
+            });
+        }
     }
-
-    // Fetch and update data every 5 seconds (adjusted for performance)
-    setInterval(() => {
-        fetchCurrentlyPlaying();
-        fetchQueue();
-    }, 5000);
-
-    // Initial fetch
-    fetchCurrentlyPlaying();
-    fetchQueue();
 
     // Fetch and display suggestions on input
     searchInput.addEventListener('input', async (e) => {
@@ -211,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 showCustomAlert(data.error, 'error');
             } else {
                 showCustomAlert('Track added to queue!');
-                fetchQueue(); // Optionally, update the queue view
                 trackDetails.innerHTML = '<p>Select a track to see details</p>';
                 addToQueueButton.style.display = 'none'; // Hide the button
                 trackInfoWindow.style.display = 'none'; // Hide the track info window                selectedTrackId = null; // Clear the selected track ID

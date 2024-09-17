@@ -7,9 +7,9 @@
 ```pip install spotipy flask python-dotenv```
 
 # Usage
-![alt text](/static/images/Readme/Dashboard%20SS.png)
+![image](/static/images/Readme/Dashboard%20SS.png)
 
 TODO:
-
-- make it work for phones
-- make the session public
+- rewrite the code with classes
+- replace the api pull from the client side to a api push from the serverside
+- add a admin user
