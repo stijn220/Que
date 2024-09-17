@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search-bar');
     const resultsBox = document.querySelector('.results ul');
     const trackInfoWindow = document.getElementById('track-info-window');
-    const closeTrackInfoButton = document.getElementById('close-track-info');
+    const closeTrackInfoButton = document.getElementById('close-track-info-window');
     const socket = io();
 
     let selectedTrackId = null;
@@ -208,7 +208,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 showCustomAlert('Track added to queue!');
                 trackDetails.innerHTML = '<p>Select a track to see details</p>';
                 addToQueueButton.style.display = 'none'; // Hide the button
-                trackInfoWindow.style.display = 'none'; // Hide the track info window                selectedTrackId = null; // Clear the selected track ID
+                trackInfoWindow.style.display = 'none'; // Hide the track info window
+                selectedTrackId = null; // Clear the selected track ID  
                 searchInput.value = ''; // Clear the search bar
             }
         })
