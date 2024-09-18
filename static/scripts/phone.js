@@ -202,19 +202,22 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
+            console.log(data)
             if (data.error) {
-                showCustomAlert(data.error, 'error');
+                // showCustomAlert(data.error, 'error');
+                console.log('Error', data.error)
             } else {
-                showCustomAlert('Track added to queue!');
+                // showCustomAlert('Track added to queue!');
                 trackDetails.innerHTML = '<p>Select a track to see details</p>';
                 addToQueueButton.style.display = 'none'; // Hide the button
                 trackInfoWindow.style.display = 'none'; // Hide the track info window
                 selectedTrackId = null; // Clear the selected track ID  
                 searchInput.value = ''; // Clear the search bar
+                hideResults();
             }
         })
         .catch(error => {
-            showCustomAlert('Error adding to queue', 'error');
+            // showCustomAlert('Error adding to queue', 'error');
             console.error('Error adding to queue:', error);
         });
     }
