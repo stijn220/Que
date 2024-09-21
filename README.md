@@ -26,7 +26,7 @@ To get started, follow these steps:
 
 2. **Install the required dependencies:**
     ```bash
-    pip install Flask Flask-Session Flask-SocketIO spotipy python-dotenv
+    pip install Flask Flask-Session Flask-SocketIO spotipy python-dotenv segno
     ```
 
 3. **Set up your Spotify application credentials:**

@@ -1,0 +1,145 @@
+/* Body and container settings */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212; /* Dark background */
+    color: #b3b3b3; /* Light gray text */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden; /* Prevent scrolling */
+}
+
+.container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background-color: #121212; /* Dark background */
+}
+
+/* Left content area styling */
+.left-content {
+    width: 70%;
+    padding: 20px;
+    background-color: #1e1e1e; /* Slightly darker than background */
+    color: #e0e0e0; /* Light gray text for better contrast */
+    border-right: 1px solid #333; /* Subtle divider between sections */
+    display: flex;
+    flex-direction: column;
+}
+
+/* QR container styling */
+.qr-container {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #181818; /* Dark background for the QR code area */
+    padding: 20px;
+}
+
+.qr-code {
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 12px; /* Rounded corners for the QR code */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Soft shadow around the QR code */
+    border: 2px solid #1db954; /* Spotify green border for emphasis */
+}
+
+/* IP Address styling */
+.ip-address {
+    margin-top: 15px;
+    color: #1db954; /* Spotify green for the IP address */
+    font-weight: bold;
+    font-size: 1.2em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle shadow for emphasis */
+}
+
+/* Styling for currently playing and queue sections */
+#current-playing-info, #users-queue {
+    margin-bottom: 20px;
+    background-color: #1e1e1e; /* Dark matching background */
+    padding: 10px;
+    border-radius: 8px; /* Rounded corners */
+}
+
+#currently-playing {
+    background-color: #1db954; /* Spotify green background */
+    color: #fff; /* White text for contrast */
+    border-radius: 10px; /* Slightly more pronounced rounded corners */
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Shadow for emphasis */
+    border: 2px solid #1db954; /* Green border */
+    margin-bottom: 10px;
+}
+
+/* Flex layout for track and queue items */
+.current-track-container, .queue-item {
+    display: flex;
+    align-items: center;
+}
+
+/* Track cover and queue item image styling */
+.current-track-cover, .queue-item img {
+    width: 75px;
+    height: 75px;
+    border-radius: 8px;
+    margin-right: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle shadow for images */
+}
+
+.current-track-details, .queue-item .current-track-details {
+    margin: 0;
+    color: #fff; /* White text for highlighted track details */
+}
+
+/* Users' queue section */
+#users-queue {
+    flex: 1; /* Allow to grow and fill available space */
+    overflow: hidden; /* Prevent scrolling on the queue section */
+}
+
+/* Queue list styling */
+#queue-list {
+    font-size: 13px;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 10px;
+    list-style-type: none;
+    background-color: #1e1e1e;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+    overflow-y: auto; /* Enable vertical scrolling */
+    border-radius: 10px;
+    height: 100%; /* Fit within the container */
+    box-sizing: border-box; /* Include padding in height calculation */
+}
+
+/* Queue item styling */
+.queue-item {
+    border-bottom: 1px solid #333; /* Light border for item separation */
+    padding: 8px; /* Reduced padding for smaller items */
+    align-items: center;
+    gap: 10px; /* Reduced gap */
+    background-color: #1e1e1e; /* Uniform dark background color */
+    border-radius: 8px; /* Slightly rounded corners */
+    transition: background-color 0.3s; /* Smooth background color transition */
+}
+
+/* Hide scrollbar */
+#queue-list::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for webkit browsers (Chrome, Safari) */
+}
+
+#queue-list {
+    -ms-overflow-style: none;  /* Hide scrollbar for Internet Explorer and Edge */
+    scrollbar-width: none;  /* Hide scrollbar for Firefox */
+}
+
+.track-number {
+    font-weight: bold; /* Make the number bold */
+    margin-right: 10px; /* Space between number and track cover */
+    color: #1db954; /* Spotify green for the number */
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/logo/icon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/qr.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <div class="left-content">
+            <h1>Scan the QR to add songs to the QUE!</h1>
+            <div id="current-playing-info">
+                <div id="currently-playing">
+                    <div class="current-track-container">
+                        <img src="/static/images/no_cover.png" alt="Track Cover" class="current-track-cover" id="track-cover">
+                        <div class="current-track-details">
+                            <h3 id="track-name">Nothing is playing</h3>
+                            <p id="track-artist"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="users-queue">
+                <div id="queue-list"></div>
+            </div>
+        </div>
+
+        <div class="qr-container">
+            <img src="{{ qr_image }}" alt="QR Code" class="qr-code">
+            <p class="ip-address"> {{ ip_address }}</p>
+        </div>
+    </div>
+
+    <script src="/static/scripts/qr.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+
+</body>
+</html>
+ 

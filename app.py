@@ -5,9 +5,11 @@ from threading import Thread
 from flask import Flask, render_template, request, redirect, url_for, jsonify, session
 from flask_session import Session
 from flask_socketio import SocketIO
+import socket
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
+import segno
 
 load_dotenv()
 
@@ -26,6 +28,9 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
 SCOPE = "user-read-playback-state user-library-read user-read-currently-playing user-modify-playback-state"
+
+qr_file_path = 'static/images/qr.png'
+
 
 cache_handler = spotipy.cache_handler.FlaskSessionCacheHandler(session)
 
@@ -69,14 +74,11 @@ def refresh_token_if_expired():
         token_manager.set_token(token_info)  # Update with refreshed token
     return token_info
 
-
 def get_spotify_client():
     token_info = refresh_token_if_expired()
     if not token_info or not token_info.get("access_token"):
         return None
     return spotipy.Spotify(auth=token_info["access_token"])
-
-
 
 def handle_spotify_exception(e):
     logging.error(f"Spotify API exception: {e}")
@@ -85,7 +87,6 @@ def handle_spotify_exception(e):
         disconnect()
         return jsonify({"error": "Access token expired. Please re-authenticate."}), 401
     return jsonify({"error": str(e)}), e.http_status
-
 
 def is_mobile_user_agent(user_agent):
     mobile_patterns = [
@@ -263,11 +264,33 @@ def add_to_queue():
     except spotipy.exceptions.SpotifyException as e:
         return handle_spotify_exception(e)
 
+    
+@app.route('/qr')
+def load_qr():
+    global port, qr_file_path
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('8.8.8.8', 80))
+        local_ip = s.getsockname()[0]
+    except Exception:
+        local_ip = 'Unable to get IP'
+    finally:
+        s.close()
+    
+    local_url = f"http://{local_ip}:{port}"
+    
+    qr = segno.make(local_url)    
+    qr.save(qr_file_path, scale=10, dark='black', light='#1db954')
+
+    
+    return render_template('qr.html', qr_image=qr_file_path, ip_address=local_url)
+    
+
 
 if __name__ == "__main__":
     # Start the background task in a separate thread
     background_thread = Thread(target=background_data_fetch)
     background_thread.daemon = True
     background_thread.start()
-
-    socketio.run(app, debug=True, host="0.0.0.0", port=8888)
+    port = 8888
+    socketio.run(app, debug=True, host="0.0.0.0", port=port)
