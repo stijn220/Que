@@ -61,6 +61,8 @@ class TokenManager:
 token_manager = TokenManager()
 
 last_queue_call = {}
+last_analyzed_track_id = None
+last_audio_analysis = None
 
 def refresh_token_if_expired():
     token_info = token_manager.get_token()
@@ -154,39 +156,80 @@ def disconnect():
 
 
 def background_data_fetch():
-    global last_queue_call
+    global last_queue_call, last_analyzed_track_id, last_audio_analysis
     while True:
         try:
             sp = get_spotify_client()
             if sp:
-                queue_response = sp.queue()
-                if queue_response:
+                # Safeguard queue API call
+                try:
+                    queue_response = sp.queue()
                     queue = queue_response.get('queue', [])
                     currently_playing = queue_response.get('currently_playing', {})
+                except Exception as e:
+                    logging.warning(f"Failed to fetch queue or currently playing info: {e}")
+                    queue = []
+                    currently_playing = {}
 
-                    queue_info = {
-                        'queue': [
-                            {
-                                'name': track['name'],
-                                'artists': [{'name': artist['name']} for artist in track['artists']],
-                                'album': {
-                                    'name': track['album']['name'],
-                                    'images': track['album']['images']
-                                }
-                            } for track in queue
-                        ],
-                        'currently_playing': {
-                            'name': currently_playing.get('name', 'No track playing'),
-                            'artists': [{'name': artist['name']} for artist in currently_playing.get('artists', [])],
+                # Safeguard playback API call
+                try:
+                    playback = sp.currently_playing()
+                    if playback and playback['item']:
+                        track_id = playback['item']['id']
+                        progress_ms = playback['progress_ms']
+                        
+                        
+                        # Only fetch audio analysis if there's a new song
+                        if track_id != last_analyzed_track_id:
+                            logging.info(f"New track detected (ID: {track_id}), fetching analysis.")
+                            try:
+                                last_audio_analysis = sp.audio_analysis(track_id)
+                                last_analyzed_track_id = track_id  # Update with the new track ID
+                            except Exception as e:
+                                logging.warning(f"Audio analysis failed: {e}")
+                                last_audio_analysis = None  # Clear the analysis if the call fails
+                        else:
+                            logging.info("Same track is playing, using cached analysis.")
+                    else:
+                        logging.info("No track currently playing.")
+                        playback = {}
+                        track_id = None
+                        last_audio_analysis = []
+                        progress_ms = 0
+                except Exception as e:
+                    logging.warning(f"Error fetching currently playing data: {e}")
+                    playback = {}
+                    track_id = None
+                    last_audio_analysis = []
+                    progress_ms = 0
+
+                # Build the queue_info dictionary with error handling for missing data
+                queue_info = {
+                    'queue': [
+                        {
+                            'name': track.get('name', 'Unknown track'),
+                            'artists': [{'name': artist.get('name', 'Unknown artist')} for artist in track.get('artists', [])],
                             'album': {
-                                'name': currently_playing.get('album', {}).get('name', 'No album info'),
-                                'images': currently_playing.get('album', {}).get('images', [])
+                                'name': track.get('album', {}).get('name', 'Unknown album'),
+                                'images': track.get('album', {}).get('images', [])
                             }
+                        } for track in queue
+                    ],
+                    'currently_playing': {
+                        'id': currently_playing.get('id', 'No ID'),
+                        'name': currently_playing.get('name', 'No track playing'),
+                        'artists': [{'name': artist.get('name', 'Unknown artist')} for artist in currently_playing.get('artists', [])],
+                        'album': {
+                            'name': currently_playing.get('album', {}).get('name', 'No album info'),
+                            'images': currently_playing.get('album', {}).get('images', [])
                         }
-                    }
-                    last_queue_call = queue_info
-                    # Emit data to all connected clients
-                    socketio.emit('update', queue_info)
+                    },
+                    'analysis' : last_audio_analysis
+                }
+
+                last_queue_call = queue_info
+                # Emit the data to all connected clients
+                socketio.emit('update', queue_info)
         except Exception as e:
             logging.error(f"Error in background task: {e}")
         time.sleep(5)
@@ -285,7 +328,9 @@ def load_qr():
     
     return render_template('qr.html', qr_image=qr_file_path, ip_address=local_url)
     
-
+@app.route('/visuals')
+def visuals():
+    return render_template('visuals.html')
 
 if __name__ == "__main__":
     # Start the background task in a separate thread
