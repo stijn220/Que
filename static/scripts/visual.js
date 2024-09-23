@@ -27,64 +27,68 @@ SOFTWARE.
 
 'use strict';
 // Music react
-const socket = io(); // Initialize Socket.IO connection
+const socket = io(); 
 
-let triggerOnHalfBeat = false
-let lastBeatTime = 0; // To track the last processed beat time
+
 
 socket.on('update', function(data) {
-    // updateAnalysis(data.analysis);
-    console.log(data)
-    console.log('update')
-    processBars(data.analysis);
-
+    console.log(data);
+    console.log('update');   
+    syncBeats(data);
 });
 
 
-// Function to start the beat synchronization
-function processBars(analysis) {
-    const bars = analysis.bars;
-    const sections = analysis.sections;
-    const loudness = analysis.sections.loudness;
-    const danceability = analysis.track.danceability;
-    const progressMs = analysis.progress_ms; // Current playback position in milliseconds
 
-    console.log(bars)
-    console.log(sections)
-    console.log(loudness)
-    console.log(danceability)
-    console.log(progressMs)
+let interval;
+let delayMs = 10
 
+function syncBeats(data) {
+    const beats = data.analysis.beats;
+    const segments = data.analysis.segments;
+    const progress = data.progress;
 
-    // Convert progress_ms to seconds
-    const progressSeconds = progressMs / 1000;
+    const currentTime = progress / 1000;
 
-    bars.forEach((bar, index) => {
-        const barEnd = bar.start + bar.duration;
+    let nextBeatIndex = beats.findIndex(beat => beat.start > currentTime);
+    let currentSegmentIndex = segments.findIndex(segment => segment.start > currentTime) - 1;
 
-        // Check if the bar is active based on the current playback position
-        if (progressSeconds >= bar.start && progressSeconds < barEnd) {
-            // Ensure segment exists for the current bar
-            if (index < sections.length) {
-                const segment = sections[index];
-                exportBarData(bar, segment, loudness, danceability);
-            }
-        }
-    });
-}
+    if (interval) clearInterval(interval);
 
-function exportBarData(bar, segment, loudness, danceability) {
-    console.log(`Exporting bar starting at ${bar.start}s`);
-    console.log(`Duration: ${bar.duration}s, Confidence: ${bar.confidence}`);
-    console.log(`Loudness: ${loudness}, Danceability: ${danceability}`);
-    console.log(`Pitches: ${segment.pitches}`);
+    if (nextBeatIndex !== -1 && currentSegmentIndex !== -1) {
+        let nextBeat = beats[nextBeatIndex];
+        let currentSegment = segments[currentSegmentIndex];
+
+        const syncBeats = (beat, segment) => {
+            console.log(`Beat hit at: ${beat.start} seconds, confidence: ${beat.confidence}`);
+            console.log(`Segment loudness: ${segment.loudness_max}, at time: ${segment.start}`);
+            splatStack.push(parseInt(Math.random() * 20) + 5);
+
+        };
+
+        let startSync = (nextBeat.start - currentTime) * 1000 + delayMs;
+        setTimeout(() => {
+            syncBeats(nextBeat, currentSegment);
+
+            interval = setInterval(() => {
+                nextBeatIndex++;
+                currentSegmentIndex++;
+
+                if (nextBeatIndex < beats.length && currentSegmentIndex < segments.length) {
+                    nextBeat = beats[nextBeatIndex];
+                    currentSegment = segments[currentSegmentIndex];
+                    syncBeats(nextBeat, currentSegment);
+                } else {
+                    clearInterval(interval);
+                }
+            }, nextBeat.duration * 1000);
+        }, startSync);
+    }
 }
 
 
 
 
 // Simulation section
-
 const canvas = document.getElementsByTagName('canvas')[0];
 resizeCanvas();
 

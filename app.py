@@ -224,7 +224,9 @@ def background_data_fetch():
                             'images': currently_playing.get('album', {}).get('images', [])
                         }
                     },
-                    'analysis' : last_audio_analysis
+                    'analysis' : last_audio_analysis ,
+
+                    'progress' :  progress_ms
                 }
 
                 last_queue_call = queue_info
