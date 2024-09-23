@@ -177,6 +177,7 @@ def background_data_fetch():
                     if playback and playback['item']:
                         track_id = playback['item']['id']
                         progress_ms = playback['progress_ms']
+                        is_playing = playback['is_playing']
                         
                         
                         # Only fetch audio analysis if there's a new song
@@ -225,8 +226,8 @@ def background_data_fetch():
                         }
                     },
                     'analysis' : last_audio_analysis ,
-
-                    'progress' :  progress_ms
+                    'progress' :  progress_ms ,
+                    'is_playing' : is_playing
                 }
 
                 last_queue_call = queue_info

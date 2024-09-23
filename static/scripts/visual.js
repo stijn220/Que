@@ -32,12 +32,19 @@ const socket = io();
 
 
 socket.on('update', function(data) {
-    console.log(data);
-    console.log('update');   
     syncBeats(data);
 });
 
+socket.on('connect', () => {
+    console.log('Connected to server');
 
+    fetch('/initial_data')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Initial data received:', data);      
+            syncBeats(data); 
+        })
+});
 
 let interval;
 let delayMs = 10
@@ -46,6 +53,13 @@ function syncBeats(data) {
     const beats = data.analysis.beats;
     const segments = data.analysis.segments;
     const progress = data.progress;
+    const is_playing = data.is_playing;
+
+    if (!is_playing) {
+        console.log('Track is paused or stopped.');
+        if (interval) clearInterval(interval);
+        return;
+    }
 
     const currentTime = progress / 1000;
 
@@ -61,7 +75,8 @@ function syncBeats(data) {
         const syncBeats = (beat, segment) => {
             console.log(`Beat hit at: ${beat.start} seconds, confidence: ${beat.confidence}`);
             console.log(`Segment loudness: ${segment.loudness_max}, at time: ${segment.start}`);
-            splatStack.push(parseInt(Math.random() * 20) + 5);
+            const splatSize = parseInt(Math.random() * 20) + 5 + (segment.loudness_max / 10);
+            splatStack.push(splatSize); // Adjust splat size based on loudness
 
         };
 
@@ -1203,7 +1218,7 @@ function updateKeywords () {
 
 updateKeywords();
 initFramebuffers();
-multipleSplats(parseInt(Math.random() * 20) + 5);
+// multipleSplats(parseInt(Math.random() * 20) + 5);
 
 let lastUpdateTime = Date.now();
 let colorUpdateTimer = 0.0;
