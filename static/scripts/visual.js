@@ -74,9 +74,17 @@ function syncBeats(data) {
 
         const syncBeats = (beat, segment) => {
             console.log(`Beat hit at: ${beat.start} seconds, confidence: ${beat.confidence}`);
-            console.log(`Segment loudness: ${segment.loudness_max}, at time: ${segment.start}`);
-            const splatSize = parseInt(Math.random() * 20) + 5 + (segment.loudness_max / 10);
-            splatStack.push(splatSize); // Adjust splat size based on loudness
+            console.log(`Segment timbre: ${segment.timbre}, at time: ${segment.start}`)
+
+            // Use timbre values to compute splat size
+            const timbre = segment.timbre;
+            const brightness = timbre[1]; // 2nd coefficient represents brightness
+            const attack = timbre[3]; // 4th coefficient represents attack
+            const variation = timbre[6]; 
+
+
+            const splatSize = parseInt(Math.random() * 20) + 5 + (brightness / 10) + (attack / 15) + (variation / 20);
+            splatStack.push(splatSize); // Adjust splat size based on timbre
 
         };
 

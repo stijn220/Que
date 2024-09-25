@@ -45,6 +45,31 @@
             window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
             ga('create', 'UA-105392568-1', 'auto');
             ga('send', 'pageview');
+
+            // Wake Lock API to prevent the screen from turning off
+            let wakeLock = null;
+
+            async function requestWakeLock() {
+                try {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake lock acquired.');
+                    wakeLock.addEventListener('release', () => {
+                        console.log('Wake lock was released.');
+                    });
+                } catch (err) {
+                    console.error(`${err.name}, ${err.message}`);
+                }
+            }
+
+            // Request the wake lock when the page loads
+            window.addEventListener('load', requestWakeLock);
+
+            // Re-acquire the wake lock when the page regains focus
+            document.addEventListener('visibilitychange', () => {
+                if (wakeLock !== null && document.visibilityState === 'visible') {
+                    requestWakeLock();
+                }
+            });
         </script>
     </head>
     <body>
